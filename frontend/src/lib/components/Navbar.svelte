@@ -1,8 +1,15 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import { authStore, clearSession } from '$lib/stores/auth';
   import { showToast } from '$lib/stores/toast';
 
   let mobileMenuOpen = false;
+
+  function isActive(path: string): boolean {
+    const currentPath = $page.url.pathname.replace(/\\/+$/, '') || '/';
+    const targetPath = path.replace(/\\/+$/, '') || '/';
+    return targetPath === '/' ? currentPath === '/' : currentPath === targetPath || currentPath.startsWith(targetPath + '/');
+  }
 
   function toggleMobile() {
     mobileMenuOpen = !mobileMenuOpen;
@@ -27,13 +34,13 @@
 
     <!-- Desktop Navigation -->
     <nav class="nav-links">
-      <a href="/" class="nav-link">Beranda</a>
-      <a href="/destinasi" class="nav-link">Destinasi</a>
-      <a href="/peta" class="nav-link">Peta Samosir</a>
-      <a href="/trip-planner" class="nav-link nav-highlight">Trip Planner</a>
-      <a href="/budaya" class="nav-link">Budaya Batak</a>
-      <a href="/kreator" class="nav-link">Kreator & UMKM</a>
-      <a href="/agenda" class="nav-link">Agenda</a>
+      <a href="/" class="nav-link" class:active={isActive('/')}>Beranda</a>
+      <a href="/destinasi" class="nav-link" class:active={isActive('/destinasi')}>Destinasi</a>
+      <a href="/peta" class="nav-link" class:active={isActive('/peta')}>Peta Samosir</a>
+      <a href="/trip-planner" class="nav-link" class:active={isActive('/trip-planner')}>Trip Planner</a>
+      <a href="/budaya" class="nav-link" class:active={isActive('/budaya')}>Budaya Batak</a>
+      <a href="/kreator" class="nav-link" class:active={isActive('/kreator')}>Kreator & UMKM</a>
+      <a href="/agenda" class="nav-link" class:active={isActive('/agenda')}>Agenda</a>
     </nav>
 
     <!-- Right Actions -->
@@ -69,13 +76,13 @@
   <!-- Mobile Drawer -->
   {#if mobileMenuOpen}
     <div class="mobile-drawer animate-fade-in">
-      <a href="/" class="mobile-link" on:click={toggleMobile}>Beranda</a>
-      <a href="/destinasi" class="mobile-link" on:click={toggleMobile}>Katalog Destinasi</a>
-      <a href="/peta" class="mobile-link" on:click={toggleMobile}>Peta Interaktif</a>
-      <a href="/trip-planner" class="mobile-link mobile-highlight" on:click={toggleMobile}>Trip Planner Cerdas</a>
-      <a href="/budaya" class="mobile-link" on:click={toggleMobile}>Cerita Budaya Batak</a>
-      <a href="/kreator" class="mobile-link" on:click={toggleMobile}>Kreator Lokal & UMKM</a>
-      <a href="/agenda" class="mobile-link" on:click={toggleMobile}>Agenda & Festival</a>
+      <a href="/" class="mobile-link" class:active={isActive('/')} on:click={toggleMobile}>Beranda</a>
+      <a href="/destinasi" class="mobile-link" class:active={isActive('/destinasi')} on:click={toggleMobile}>Katalog Destinasi</a>
+      <a href="/peta" class="mobile-link" class:active={isActive('/peta')} on:click={toggleMobile}>Peta Interaktif</a>
+      <a href="/trip-planner" class="mobile-link" class:active={isActive('/trip-planner')} on:click={toggleMobile}>Trip Planner Cerdas</a>
+      <a href="/budaya" class="mobile-link" class:active={isActive('/budaya')} on:click={toggleMobile}>Cerita Budaya Batak</a>
+      <a href="/kreator" class="mobile-link" class:active={isActive('/kreator')} on:click={toggleMobile}>Kreator Lokal & UMKM</a>
+      <a href="/agenda" class="mobile-link" class:active={isActive('/agenda')} on:click={toggleMobile}>Agenda & Festival</a>
       <div class="mobile-divider"></div>
       {#if $authStore.isAuthenticated}
         <a href="/admin/dashboard" class="btn btn-forest btn-sm" on:click={toggleMobile}>Buka Dashboard Admin</a>
@@ -161,8 +168,20 @@
     color: var(--color-terracotta);
   }
 
-  .nav-highlight {
+  .nav-link.active {
     color: var(--color-terracotta);
+    font-weight: 700;
+  }
+
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.75rem;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--color-terracotta);
   }
 
   .nav-actions {
@@ -245,8 +264,9 @@
     color: var(--color-forest);
   }
 
-  .mobile-highlight {
+  .mobile-link.active {
     color: var(--color-terracotta);
+    font-weight: 700;
   }
 
   .mobile-divider {
