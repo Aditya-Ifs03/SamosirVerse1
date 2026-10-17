@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { api } from '$lib/api';
-  import type { TripPlanRequest, TripPlanResponse } from '$lib/types';
+  import { api, FALLBACK_DESTINATIONS } from '$lib/api';
+  import type { Destination, TripPlanRequest, TripPlanResponse } from '$lib/types';
   import { showToast } from '$lib/stores/toast';
 
   let durationDays = 2;
@@ -13,21 +13,93 @@
   let loading = false;
   let activeDayTab = 1;
 
+  // Local rule-based itinerary keeps the demo usable when no public backend is configured.
+  function buildLocalTripPlan(req: TripPlanRequest): TripPlanResponse {
+    const categoryByStyle: Record<string, string> = {
+      BUDAYA: 'BUDAYA_SEJARAH',
+      ALAM: 'ALAM',
+      KULINER_KREATIF: 'KULINER_UMKM'
+    };
+    const matching = FALLBACK_DESTINATIONS.filter((destination) => {
+      if (req.travelStyle === 'SANTAI') return true;
+      return destination.category === categoryByStyle[req.travelStyle];
+    });
+    const destinations = matching.length ? matching : FALLBACK_DESTINATIONS;
+    const selected: Destination[] = [];
+    for (let i = 0; i < req.durationDays * 3; i++) {
+      selected.push(destinations[i % destinations.length]);
+    }
+
+    const budgetMultiplier = req.budgetCategory === 'HEMAT' ? 0.75 : req.budgetCategory === 'PREMIUM' ? 1.65 : 1;
+    const groupMultiplier = req.groupType === 'SOLO' ? 0.8 : req.groupType === 'KELUARGA' ? 1.25 : req.groupType === 'ROMBONGAN' ? 1.15 : 1;
+    const times = [
+      { timeSlot: '08.30–10.30', period: 'Pagi' },
+      { timeSlot: '11.00–13.00', period: 'Siang' },
+      { timeSlot: '14.00–16.00', period: 'Sore' }
+    ];
+    const days = Array.from({ length: req.durationDays }, (_, dayIndex) => {
+      const dayDestinations = selected.slice(dayIndex * 3, dayIndex * 3 + 3);
+      return {
+        dayNumber: dayIndex + 1,
+        theme: req.travelStyle === 'BUDAYA' ? 'Budaya & Sejarah Batak' :
+          req.travelStyle === 'ALAM' ? 'Alam & Kaldera Danau Toba' :
+          req.travelStyle === 'SANTAI' ? 'Santai & Pesisir Danau Toba' : 'Kriya & Kuliner Lokal',
+        activities: dayDestinations.map((destination, index) => {
+          const baseCost = destination.ticketPrice + (index === 1 ? 45000 : 30000);
+          const estimatedCost = Math.round(baseCost * budgetMultiplier * groupMultiplier);
+          return {
+            timeSlot: times[index].timeSlot,
+            period: times[index].period,
+            title: destination.name,
+            location: destination.subDistrict + ', Samosir',
+            description: destination.shortDescription || destination.description,
+            estimatedCost,
+            tips: destination.culturalSignificance || 'Hormati adat setempat, jaga kebersihan, dan tanyakan izin sebelum memotret warga.',
+            destinationId: destination.id
+          };
+        })
+      };
+    });
+    const activityCosts = days.flatMap(day => day.activities).reduce((sum, activity) => sum + activity.estimatedCost, 0);
+    const lodgingCost = req.durationDays > 1 ? (req.budgetCategory === 'PREMIUM' ? 900000 : req.budgetCategory === 'HEMAT' ? 250000 : 450000) * (req.durationDays - 1) : 0;
+    const totalEstimatedCost = activityCosts + lodgingCost;
+
+    return {
+      planTitle: `Jelajah Samosir ${req.durationDays} Hari — ${req.travelStyle === 'BUDAYA' ? 'Budaya Batak' : req.travelStyle === 'ALAM' ? 'Alam & Kaldera' : req.travelStyle === 'SANTAI' ? 'Santai Pesisir' : 'Kriya & Kuliner'}`,
+      summary: 'Itinerary demo disusun berdasarkan kategori destinasi, durasi kunjungan, anggaran, dan tipe rombongan. Biaya merupakan estimasi awal dan dapat berubah sesuai kondisi di lapangan.',
+      durationDays: req.durationDays,
+      travelStyle: req.travelStyle,
+      budgetCategory: req.budgetCategory,
+      groupType: req.groupType,
+      totalEstimatedCost,
+      costBreakdown: `Tiket, makan, dan transport lokal (estimasi) + penginapan ${req.durationDays > 1 ? 'untuk ' + (req.durationDays - 1) + ' malam' : 'tidak termasuk'}.`,
+      days,
+      culturalEtiquetteTips: [
+        'Ucapkan “Horas” sebagai salam yang ramah saat bertemu masyarakat setempat.',
+        'Mintalah izin sebelum memotret warga, rumah adat, atau kegiatan menenun.',
+        'Gunakan pakaian yang sopan saat mengunjungi situs adat dan tempat sakral.',
+        'Bawa kembali sampah dan dukung usaha lokal dengan membeli produk langsung dari perajin.'
+      ]
+    };
+  }
+
   async function handleGeneratePlan() {
     loading = true;
+    const req: TripPlanRequest = {
+      durationDays,
+      travelStyle,
+      budgetCategory,
+      groupType
+    };
     try {
-      const req: TripPlanRequest = {
-        durationDays,
-        travelStyle,
-        budgetCategory,
-        groupType
-      };
       tripPlan = await api.generateTripPlan(req);
-      activeDayTab = 1;
-      showToast('Rencana perjalanan cerdas Samosir berhasil disusun!', 'success');
-    } catch (err: any) {
-      showToast(err.message || 'Gagal menyusun rencana perjalanan', 'error');
+      showToast('Rencana perjalanan berhasil disusun dari server!', 'success');
+    } catch (err) {
+      console.warn('[SamosirVerse] Backend itinerary tidak tersedia; menggunakan generator lokal.', err);
+      tripPlan = buildLocalTripPlan(req);
+      showToast('Itinerary demo berhasil dibuat. Data server belum terhubung.', 'success');
     } finally {
+      activeDayTab = 1;
       loading = false;
     }
   }
