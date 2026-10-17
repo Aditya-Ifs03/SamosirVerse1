@@ -9,11 +9,12 @@
   let loading = true;
   let errorMsg = '';
 
-  $: slug = $page.params.slug;
+  $: slug = $page.params.slug ?? '';
 
   onMount(async () => {
     try {
-      destination = await api.getDestinationBySlug(slug);
+      const currentSlug = $page.params.slug || '';
+      destination = await api.getDestinationBySlug(currentSlug);
     } catch (err: any) {
       errorMsg = err.message || 'Gagal memuat detail destinasi';
     } finally {

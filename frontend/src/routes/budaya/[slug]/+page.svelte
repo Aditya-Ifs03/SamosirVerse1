@@ -8,11 +8,12 @@
   let loading = true;
   let errorMsg = '';
 
-  $: slug = $page.params.slug;
+  $: slug = $page.params.slug ?? '';
 
   onMount(async () => {
     try {
-      story = await api.getCulturalStoryBySlug(slug);
+      const currentSlug = $page.params.slug || '';
+      story = await api.getCulturalStoryBySlug(currentSlug);
     } catch (err: any) {
       errorMsg = err.message || 'Gagal memuat artikel budaya';
     } finally {

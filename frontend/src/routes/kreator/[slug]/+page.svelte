@@ -10,11 +10,12 @@
   let loading = true;
   let errorMsg = '';
 
-  $: slug = $page.params.slug;
+  $: slug = $page.params.slug ?? '';
 
   onMount(async () => {
     try {
-      creator = await api.getCreatorBySlug(slug);
+      const currentSlug = $page.params.slug || '';
+      creator = await api.getCreatorBySlug(currentSlug);
       if (creator) {
         products = await api.getProducts('', creator.id);
       }
