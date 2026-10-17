@@ -11,7 +11,9 @@ import type {
   ApiResponse
 } from './types';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+// In production, configure VITE_API_BASE_URL to the public backend URL (including /api).
+// Same-origin /api is the safe default for deployments that proxy the backend.
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/+$/, '');
 
 function getAuthHeader(): Record<string, string> {
   if (typeof window !== 'undefined') {
