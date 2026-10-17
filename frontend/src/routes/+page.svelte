@@ -65,7 +65,7 @@
 </svelte:head>
 
 <!-- HERO SECTION -->
-<section class="hero-section">
+<section id="home-section" class="hero-section">
   <div class="hero-overlay"></div>
   <div class="container hero-container">
     <div class="hero-badge badge badge-lake">
@@ -113,7 +113,7 @@
 </section>
 
 <!-- QUICK SMART TRIP PLANNER WIDGET -->
-<section class="planner-widget-section">
+<section id="trip-planner-section" class="planner-widget-section">
   <div class="container">
     <div class="planner-widget-card card-editorial">
       <div class="planner-widget-header">
@@ -208,7 +208,7 @@
 </section>
 
 <!-- FEATURED DESTINATIONS SECTION -->
-<section class="section-padding">
+<section id="destinations-section" class="section-padding">
   <div class="container">
     <div class="section-header">
       <div class="header-left">
@@ -239,7 +239,7 @@
 </section>
 
 <!-- INTERACTIVE MAP TEASER -->
-<section class="map-teaser-section">
+<section id="map-section" class="map-teaser-section">
   <div class="container">
     <div class="map-teaser-box">
       <div class="map-teaser-content">
@@ -267,7 +267,7 @@
 </section>
 
 <!-- BATAK TOBA CULTURAL STORIES -->
-<section class="section-padding bg-ivory-light">
+<section id="culture-section" class="section-padding bg-ivory-light">
   <div class="container">
     <div class="section-header">
       <div class="header-left">
@@ -291,7 +291,7 @@
 </section>
 
 <!-- LOCAL CREATORS & UMKM SPOTLIGHT -->
-<section class="section-padding">
+<section id="creators-section" class="section-padding">
   <div class="container">
     <div class="section-header">
       <div class="header-left">
@@ -315,7 +315,7 @@
 </section>
 
 <!-- LOCAL EXPERIENCES & FESTIVALS -->
-<section class="section-padding bg-ivory-light">
+<section id="agenda-section" class="section-padding bg-ivory-light">
   <div class="container">
     <div class="section-header">
       <div class="header-left">
