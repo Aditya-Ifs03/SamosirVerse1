@@ -66,13 +66,13 @@
 
     <!-- Desktop Navigation -->
     <nav class="nav-links">
-      <a href="/" class="nav-link" class:active={isActive('/')}>Beranda</a>
-      <a href="/destinasi" class="nav-link" class:active={isActive('/destinasi')}>Destinasi</a>
-      <a href="/peta" class="nav-link" class:active={isActive('/peta')}>Peta Samosir</a>
-      <a href="/trip-planner" class="nav-link" class:active={isActive('/trip-planner')}>Trip Planner</a>
-      <a href="/budaya" class="nav-link" class:active={isActive('/budaya')}>Budaya Batak</a>
-      <a href="/kreator" class="nav-link" class:active={isActive('/kreator')}>Kreator & UMKM</a>
-      <a href="/agenda" class="nav-link" class:active={isActive('/agenda')}>Agenda</a>
+      <a href="/" class="nav-link" class:active={isActive('/') } aria-current={isActive('/') ? 'page' : undefined}>Beranda</a>
+      <a href="/destinasi" class="nav-link" class:active={isActive('/destinasi') } aria-current={isActive('/destinasi') ? 'page' : undefined}>Destinasi</a>
+      <a href="/peta" class="nav-link" class:active={isActive('/peta') } aria-current={isActive('/peta') ? 'page' : undefined}>Peta Samosir</a>
+      <a href="/trip-planner" class="nav-link" class:active={isActive('/trip-planner') } aria-current={isActive('/trip-planner') ? 'page' : undefined}>Trip Planner</a>
+      <a href="/budaya" class="nav-link" class:active={isActive('/budaya') } aria-current={isActive('/budaya') ? 'page' : undefined}>Budaya Batak</a>
+      <a href="/kreator" class="nav-link" class:active={isActive('/kreator') } aria-current={isActive('/kreator') ? 'page' : undefined}>Kreator & UMKM</a>
+      <a href="/agenda" class="nav-link" class:active={isActive('/agenda') } aria-current={isActive('/agenda') ? 'page' : undefined}>Agenda</a>
     </nav>
 
     <!-- Right Actions -->
@@ -202,7 +202,11 @@
 
   .nav-link.active {
     color: var(--color-terracotta);
-    font-weight: 700;
+    font-weight: 800;
+    background: rgba(207, 105, 65, 0.09);
+    border-radius: 0.45rem;
+    padding-left: 0.45rem;
+    padding-right: 0.45rem;
   }
 
   .nav-link.active::after {
@@ -210,7 +214,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -0.75rem;
+    bottom: -0.65rem;
     height: 3px;
     border-radius: 999px;
     background: var(--color-terracotta);
