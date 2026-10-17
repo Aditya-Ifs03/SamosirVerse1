@@ -6,8 +6,8 @@
   let mobileMenuOpen = false;
 
   function isActive(path: string): boolean {
-    const currentPath = $page.url.pathname.replace(/\\/+$/, '') || '/';
-    const targetPath = path.replace(/\\/+$/, '') || '/';
+    const currentPath = $page.url.pathname.replace(/\/+$/, '') || '/';
+    const targetPath = path.replace(/\/+$/, '') || '/';
     return targetPath === '/' ? currentPath === '/' : currentPath === targetPath || currentPath.startsWith(targetPath + '/');
   }
 
