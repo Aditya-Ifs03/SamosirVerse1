@@ -1,0 +1,33 @@
+# Maven and Java
+backend/target/
+backend/.mvn/
+backend/*.log
+backend/.flattened-pom.xml
+backend/.project
+backend/.classpath
+backend/.settings/
+
+# Node and SvelteKit
+frontend/node_modules/
+frontend/.svelte-kit/
+frontend/build/
+frontend/package-lock.json
+frontend/.env.local
+frontend/.env.*.local
+
+# Operating System & IDE
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment & Secrets
+.env
+*.pem
+*.key
