@@ -1,11 +1,43 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { authStore, clearSession } from '$lib/stores/auth';
   import { showToast } from '$lib/stores/toast';
 
   let mobileMenuOpen = false;
+  let scrollActivePath = '';
+
+  onMount(() => {
+    const sectionLinks: Array<{ id: string; path: string }> = [
+      { id: 'home-section', path: '/' },
+      { id: 'trip-planner-section', path: '/trip-planner' },
+      { id: 'destinations-section', path: '/destinasi' },
+      { id: 'map-section', path: '/peta' },
+      { id: 'culture-section', path: '/budaya' },
+      { id: 'creators-section', path: '/kreator' },
+      { id: 'agenda-section', path: '/agenda' }
+    ];
+    const updateActiveSection = () => {
+      if ($page.url.pathname !== '/') { scrollActivePath = ''; return; }
+      const marker = window.scrollY + 120;
+      let activePath = '/';
+      for (const section of sectionLinks) {
+        const element = document.getElementById(section.id);
+        if (element && element.getBoundingClientRect().top + window.scrollY <= marker) activePath = section.path;
+      }
+      scrollActivePath = activePath;
+    };
+    updateActiveSection();
+    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    window.addEventListener('resize', updateActiveSection);
+    return () => {
+      window.removeEventListener('scroll', updateActiveSection);
+      window.removeEventListener('resize', updateActiveSection);
+    };
+  });
 
   function isActive(path: string): boolean {
+    if ($page.url.pathname === '/' && scrollActivePath) return scrollActivePath === path;
     const currentPath = $page.url.pathname.replace(/\/+$/, '') || '/';
     const targetPath = path.replace(/\/+$/, '') || '/';
     return targetPath === '/' ? currentPath === '/' : currentPath === targetPath || currentPath.startsWith(targetPath + '/');
